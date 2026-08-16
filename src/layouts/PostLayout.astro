@@ -9,6 +9,7 @@ interface Props {
 }
 
 const { title, date, tag, excerpt } = Astro.props;
+const base = import.meta.env.BASE_URL;
 
 const formattedDate = date.toLocaleDateString('it-IT', {
   day: 'numeric',
@@ -29,7 +30,7 @@ const formattedDate = date.toLocaleDateString('it-IT', {
     </div>
 
     <div class="post-footer wrap-narrow">
-      <a href="/news" class="btn btn-outline">&larr; Torna a tutte le news</a>
+      <a href={`${base}news`} class="btn btn-outline">&larr; Torna a tutte le news</a>
     </div>
   </article>
 </BaseLayout>
