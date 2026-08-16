@@ -1,5 +1,6 @@
 ---
 const year = new Date().getFullYear();
+const base = import.meta.env.BASE_URL;
 ---
 <footer class="site-footer">
   <div class="wrap">
@@ -11,10 +12,10 @@ const year = new Date().getFullYear();
       <div class="footer-col">
         <h4>Sito</h4>
         <ul>
-          <li><a href="/chi-siamo">Chi siamo</a></li>
-          <li><a href="/#attivita">Attività</a></li>
-          <li><a href="/news">News</a></li>
-          <li><a href="/contatti">Contatti</a></li>
+          <li><a href={`${base}chi-siamo`}>Chi siamo</a></li>
+          <li><a href={`${base}#attivita`}>Attività</a></li>
+          <li><a href={`${base}news`}>News</a></li>
+          <li><a href={`${base}contatti`}>Contatti</a></li>
         </ul>
       </div>
       <div class="footer-col">
