@@ -1,14 +1,16 @@
 ---
+const base = import.meta.env.BASE_URL;
+
 const navLinks = [
-  { href: '/chi-siamo', label: 'Chi siamo' },
-  { href: '/#attivita', label: 'Attività' },
-  { href: '/news', label: 'News' },
-  { href: '/contatti', label: 'Contatti' },
+  { href: `${base}chi-siamo`, label: 'Chi siamo' },
+  { href: `${base}#attivita`, label: 'Attività' },
+  { href: `${base}news`, label: 'News' },
+  { href: `${base}contatti`, label: 'Contatti' },
 ];
 ---
 <header class="site-header">
   <nav class="nav">
-    <a href="/" class="logo">
+    <a href={base} class="logo">
       <span class="logo-mark"></span>Scelta Vincente
     </a>
     <div class="nav-links" id="nav-links">
@@ -18,7 +20,7 @@ const navLinks = [
         ))}
       </ul>
     </div>
-    <a href="/#supporta" class="nav-cta">Dona ora</a>
+    <a href={`${base}#supporta`} class="nav-cta">Dona ora</a>
     <button class="menu-toggle" aria-label="Apri menu" id="menu-toggle">☰</button>
   </nav>
 </header>
