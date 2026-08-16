@@ -1,0 +1,35 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title: string;
+  date: Date;
+  tag?: string;
+  excerpt: string;
+}
+
+const { title, date, tag, excerpt } = Astro.props;
+
+const formattedDate = date.toLocaleDateString('it-IT', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+---
+<BaseLayout title={title} description={excerpt}>
+  <article class="post-full">
+    <header class="post-header wrap-narrow">
+      {tag && <div class="news-tag post-tag">{tag}</div>}
+      <h1>{title}</h1>
+      <div class="post-meta">{formattedDate}</div>
+    </header>
+
+    <div class="post-content wrap-narrow">
+      <slot />
+    </div>
+
+    <div class="post-footer wrap-narrow">
+      <a href="/news" class="btn btn-outline">&larr; Torna a tutte le news</a>
+    </div>
+  </article>
+</BaseLayout>

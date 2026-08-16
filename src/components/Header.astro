@@ -1,0 +1,33 @@
+---
+const navLinks = [
+  { href: '/chi-siamo', label: 'Chi siamo' },
+  { href: '/#attivita', label: 'Attività' },
+  { href: '/news', label: 'News' },
+  { href: '/contatti', label: 'Contatti' },
+];
+---
+<header class="site-header">
+  <nav class="nav">
+    <a href="/" class="logo">
+      <span class="logo-mark"></span>Scelta Vincente
+    </a>
+    <div class="nav-links" id="nav-links">
+      <ul>
+        {navLinks.map((link) => (
+          <li><a href={link.href}>{link.label}</a></li>
+        ))}
+      </ul>
+    </div>
+    <a href="/#supporta" class="nav-cta">Dona ora</a>
+    <button class="menu-toggle" aria-label="Apri menu" id="menu-toggle">☰</button>
+  </nav>
+</header>
+
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const links = document.getElementById('nav-links');
+
+  toggle?.addEventListener('click', () => {
+    links?.classList.toggle('is-open');
+  });
+</script>

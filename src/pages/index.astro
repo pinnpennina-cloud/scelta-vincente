@@ -1,0 +1,124 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('posts');
+const latestPosts = allPosts
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+---
+<BaseLayout title="Home">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">ASD APS</div>
+        <h1>Lo sport come diritto, non come privilegio.</h1>
+        <p>Promuoviamo l'attività sportiva e sosteniamo le categorie sociali più fragili, garantendo accesso gratuito allo sport a donne, bambini, persone con disabilità e anziani.</p>
+        <div class="hero-actions">
+          <a href="#attivita" class="btn btn-primary">Scopri le attività</a>
+          <a href="/contatti" class="btn btn-outline">Diventa socio</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="badge">⚽</div>
+        <div class="badge">🏀</div>
+        <div class="badge">🎾</div>
+        <div class="badge">🏊</div>
+        <div class="badge">🏃</div>
+        <div class="badge">🎳</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="stats">
+    <div class="wrap stats-grid">
+      <div class="stat"><div class="num">100+</div><div class="label">Tesserati</div></div>
+      <div class="stat"><div class="num">8</div><div class="label">Discipline sportive</div></div>
+      <div class="stat"><div class="num">4</div><div class="label">Centri attivi</div></div>
+      <div class="stat"><div class="num">2019</div><div class="label">Anno di fondazione</div></div>
+    </div>
+  </div>
+
+  <section id="attivita">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Cosa facciamo</div>
+        <h2>Attività sportive per ogni fascia d'età</h2>
+        <p>Corsi gratuiti e a tariffa agevolata pensati per chi trova più ostacoli nell'accesso allo sport.</p>
+      </div>
+      <div class="activities-grid">
+        <div class="activity-card">
+          <div class="icon">⚽</div>
+          <h3>Sport di squadra</h3>
+          <p>Calcio, basket e pallavolo per bambini e ragazzi, ogni settimana.</p>
+        </div>
+        <div class="activity-card">
+          <div class="icon">🧑‍🦽</div>
+          <h3>Sport inclusivo</h3>
+          <p>Percorsi motori adattati, pensati insieme a educatori e famiglie.</p>
+        </div>
+        <div class="activity-card">
+          <div class="icon">🧓</div>
+          <h3>Attività per anziani</h3>
+          <p>Ginnastica dolce e socialità, per restare attivi a ogni età.</p>
+        </div>
+        <div class="activity-card">
+          <div class="icon">🎉</div>
+          <h3>Centri estivi</h3>
+          <p>Settimane di sport e gioco durante le vacanze scolastiche.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="news-sky">
+    <section id="news">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="eyebrow">Diario</div>
+          <h2>Le ultime notizie</h2>
+          <p>Cosa succede ai nostri centri, evento dopo evento.</p>
+        </div>
+
+        <div class="news-list">
+          {latestPosts.length > 0 ? (
+            latestPosts.map((post) => (
+              <a href={`/news/${post.slug}`} class="news-item">
+                <div class="news-date">
+                  {post.data.date.toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </div>
+                <div class="news-body">
+                  <h3>{post.data.title}</h3>
+                  <p>{post.data.excerpt}</p>
+                </div>
+                {post.data.tag && <div class="news-tag">{post.data.tag}</div>}
+              </a>
+            ))
+          ) : (
+            <div class="news-empty">
+              <p>Non hai ancora pubblicato nessun post. Aggiungi un file Markdown in <code>src/content/posts/</code>.</p>
+            </div>
+          )}
+        </div>
+
+        {allPosts.length > 3 && (
+          <div class="view-all">
+            <a href="/news" class="btn btn-outline">Vedi tutte le news</a>
+          </div>
+        )}
+      </div>
+    </section>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <div class="support-band" id="supporta">
+        <div>
+          <h2>Sostienici con il tuo 5x1000</h2>
+          <p>Non ti costa nulla, a noi permette di continuare a garantire lo sport gratuito a chi ne ha più bisogno.</p>
+        </div>
+        <a href="/contatti" class="btn btn-outline">Scopri come fare</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

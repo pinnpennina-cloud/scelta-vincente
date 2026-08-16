@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = (await getCollection('posts')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+---
+<BaseLayout title="News">
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Diario</div>
+        <h2>Tutte le news</h2>
+        <p>L'archivio completo delle attività e degli aggiornamenti dell'associazione.</p>
+      </div>
+
+      <div class="news-list">
+        {allPosts.length > 0 ? (
+          allPosts.map((post) => (
+            <a href={`/news/${post.slug}`} class="news-item">
+              <div class="news-date">
+                {post.data.date.toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' })}
+              </div>
+              <div class="news-body">
+                <h3>{post.data.title}</h3>
+                <p>{post.data.excerpt}</p>
+              </div>
+              {post.data.tag && <div class="news-tag">{post.data.tag}</div>}
+            </a>
+          ))
+        ) : (
+          <div class="news-empty">
+            <p>Non hai ancora pubblicato nessun post.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
