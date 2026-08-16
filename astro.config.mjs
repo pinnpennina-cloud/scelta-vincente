@@ -3,5 +3,5 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   // Sostituisci con il tuo dominio reale
   site: 'https://tuodominio.it',
-  base: '/scelta-vincente',
+  base: '/scelta-vincente/',
 });
