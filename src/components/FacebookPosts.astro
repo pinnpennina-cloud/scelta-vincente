@@ -1,0 +1,75 @@
+---
+// src/components/FacebookPosts.astro
+import { getFacebookFeed } from '../lib/facebook';
+
+let posts = [];
+let error = null;
+
+try {
+  posts = await getFacebookFeed(6);
+} catch (e) {
+  error = e instanceof Error ? e.message : 'Errore nel recupero dei post';
+}
+---
+
+<section class="facebook-posts">
+  <h2>Ultimi post da Facebook</h2>
+
+  {error && <p class="error">Impossibile caricare i post al momento.</p>}
+
+  <div class="posts-grid">
+    {posts.map((post) => (
+      <article class="post-card">
+        {post.full_picture && (
+          <img src={post.full_picture} alt="" loading="lazy" />
+        )}
+        {post.message && <p class="post-text">{post.message}</p>}
+        <time datetime={post.created_time}>
+          {new Date(post.created_time).toLocaleDateString('it-IT', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+          })}
+        </time>
+        <a href={post.permalink_url} target="_blank" rel="noopener noreferrer">
+          Visualizza su Facebook →
+        </a>
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  .post-card {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .post-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+  }
+  .post-text {
+    padding: 0.75rem 1rem 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+  .post-card time {
+    padding: 0.5rem 1rem 0;
+    font-size: 0.8rem;
+    color: #777;
+  }
+  .post-card a {
+    padding: 0.75rem 1rem 1rem;
+    font-weight: 600;
+    color: inherit;
+  }
+</style>
