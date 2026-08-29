@@ -28,28 +28,19 @@ export interface FacebookPost {
 
 const GRAPH_API_VERSION = 'v26.0';
 
-export async function getFacebookFeed(limit = 10): Promise<FacebookPost[]> {
+export async function getPageCoverImage(): Promise<string | null> {
   const pageId = import.meta.env.META_PAGE_ID;
   const token = import.meta.env.META_PAGE_ACCESS_TOKEN;
 
-  if (!pageId || !token) {
-    throw new Error(
-      'META_PAGE_ID o META_PAGE_ACCESS_TOKEN mancanti nelle variabili d\'ambiente'
-    );
-  }
+  if (!pageId || !token) return null;
 
-  const fields =
-    'id,message,created_time,permalink_url,full_picture,attachments{media_type,title,description,media,subattachments}';
-  const url = `https://graph.facebook.com/${GRAPH_API_VERSION}/${pageId}/feed?fields=${fields}&limit=${limit}&access_token=${token}`;
-
+  const url = `https://graph.facebook.com/${GRAPH_API_VERSION}/${pageId}?fields=picture.type(large),cover&access_token=${token}`;
   const res = await fetch(url);
-  const json: FacebookFeedResponse = await res.json();
+  const json = await res.json();
 
-  if (json.error) {
-    throw new Error(`Graph API error: ${json.error.message}`);
-  }
+  if (json.error) return null;
 
-  return json.data ?? [];
+  return json.cover?.source || json.picture?.data?.url || null;
 }
 
 // getPageViewsTotal invariato
