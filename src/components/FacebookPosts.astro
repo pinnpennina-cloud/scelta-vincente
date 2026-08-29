@@ -11,13 +11,20 @@ try {
   error = e instanceof Error ? e.message : 'Errore nel recupero dei post';
 }
 
+// Meta restituisce questo testo generico quando un contenuto condiviso
+// da un'altra pagina non è accessibile via API per motivi di privacy.
+// Non va mostrato come se fosse il testo reale del post.
+function isRestrictedPlaceholder(text: string): boolean {
+  return text.includes('ha condiviso il contenuto solo con un gruppo ristretto');
+}
+
 function getText(post: FacebookPost): string {
-  return (
+  const candidate =
     post.message ||
     post.attachments?.data?.[0]?.description ||
     post.attachments?.data?.[0]?.title ||
-    ''
-  );
+    '';
+  return isRestrictedPlaceholder(candidate) ? '' : candidate;
 }
 
 function getImage(post: FacebookPost): string | null {
