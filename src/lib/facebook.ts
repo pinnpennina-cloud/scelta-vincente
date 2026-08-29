@@ -14,6 +14,7 @@ function isRestrictedPlaceholder(text: string): boolean {
 }
 
 try {
+  // chiediamo più post del necessario, per compensare quelli filtrati
   const rawPosts = await getFacebookFeed(DISPLAY_COUNT + 6);
   fallbackImage = await getPageCoverImage();
 
@@ -45,3 +46,78 @@ function getImage(post: FacebookPost): string | null {
   );
 }
 ---
+<section class="facebook-posts">
+  <h2>Ultimi post da Facebook</h2>
+
+  {error && <p class="error">Impossibile caricare i post al momento.</p>}
+
+  <div class="posts-grid">
+    {posts.map((post) => {
+      const text = getText(post);
+      const image = getImage(post);
+      return (
+        <article class="post-card">
+          {image && <img src={image} alt="" loading="lazy" />}
+          <div class="post-body">
+            {text && <p class="post-text">{text}</p>}
+            <time datetime={post.created_time}>
+              {new Date(post.created_time).toLocaleDateString('it-IT', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric',
+              })}
+            </time>
+            <a href={post.permalink_url} target="_blank" rel="noopener noreferrer">
+              Visualizza su Facebook →
+            </a>
+          </div>
+        </article>
+      );
+    })}
+  </div>
+</section>
+
+<style>
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  .post-card {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .post-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+  }
+  .post-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 0.75rem 1rem 1rem;
+  }
+  .post-text {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    white-space: pre-line;
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .post-card time {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: #777;
+  }
+  .post-card a {
+    margin-top: 0.5rem;
+    font-weight: 600;
+    color: inherit;
+  }
+</style>
