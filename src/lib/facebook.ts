@@ -1,95 +1,47 @@
-// src/lib/facebook.ts
+---
+// src/components/FacebookPosts.astro
+import { getFacebookFeed, getPageCoverImage } from '../lib/facebook';
+import type { FacebookPost } from '../lib/facebook';
 
-export interface FacebookAttachmentMedia {
-  image?: { src: string };
+const DISPLAY_COUNT = 6;
+
+let posts: FacebookPost[] = [];
+let error: string | null = null;
+let fallbackImage: string | null = null;
+
+function isRestrictedPlaceholder(text: string): boolean {
+  return text.includes('ha condiviso il contenuto solo con un gruppo ristretto');
 }
 
-export interface FacebookAttachment {
-  title?: string;
-  description?: string;
-  media?: FacebookAttachmentMedia;
-  subattachments?: {
-    data: { media?: FacebookAttachmentMedia }[];
-  };
+try {
+  const rawPosts = await getFacebookFeed(DISPLAY_COUNT + 6);
+  fallbackImage = await getPageCoverImage();
+
+  posts = rawPosts
+    .filter((post) => {
+      const text = post.message || post.attachments?.data?.[0]?.description || '';
+      return !isRestrictedPlaceholder(text);
+    })
+    .slice(0, DISPLAY_COUNT);
+} catch (e) {
+  error = e instanceof Error ? e.message : 'Errore nel recupero dei post';
 }
 
-export interface FacebookPost {
-  id: string;
-  message?: string;
-  created_time: string;
-  permalink_url: string;
-  full_picture?: string;
-  attachments?: {
-    data: FacebookAttachment[];
-  };
+function getText(post: FacebookPost): string {
+  return (
+    post.message ||
+    post.attachments?.data?.[0]?.description ||
+    post.attachments?.data?.[0]?.title ||
+    ''
+  );
 }
 
-interface FacebookFeedResponse {
-  data: FacebookPost[];
-  error?: {
-    message: string;
-    type: string;
-    code: number;
-  };
+function getImage(post: FacebookPost): string | null {
+  return (
+    post.full_picture ||
+    post.attachments?.data?.[0]?.media?.image?.src ||
+    post.attachments?.data?.[0]?.subattachments?.data?.[0]?.media?.image?.src ||
+    fallbackImage
+  );
 }
-
-const GRAPH_API_VERSION = 'v26.0';
-
-export async function getFacebookFeed(limit = 10): Promise<FacebookPost[]> {
-  const pageId = import.meta.env.META_PAGE_ID;
-  const token = import.meta.env.META_PAGE_ACCESS_TOKEN;
-
-  if (!pageId || !token) {
-    throw new Error(
-      'META_PAGE_ID o META_PAGE_ACCESS_TOKEN mancanti nelle variabili d\'ambiente'
-    );
-  }
-
-  const fields =
-    'id,message,created_time,permalink_url,full_picture,attachments{media_type,title,description,media,subattachments}';
-  const url = `https://graph.facebook.com/${GRAPH_API_VERSION}/${pageId}/feed?fields=${fields}&limit=${limit}&access_token=${token}`;
-
-  const res = await fetch(url);
-  const json: FacebookFeedResponse = await res.json();
-
-  if (json.error) {
-    throw new Error(`Graph API error: ${json.error.message}`);
-  }
-
-  return json.data ?? [];
-}
-
-export async function getPageCoverImage(): Promise<string | null> {
-  const pageId = import.meta.env.META_PAGE_ID;
-  const token = import.meta.env.META_PAGE_ACCESS_TOKEN;
-
-  if (!pageId || !token) return null;
-
-  const url = `https://graph.facebook.com/${GRAPH_API_VERSION}/${pageId}?fields=picture.type(large),cover&access_token=${token}`;
-  const res = await fetch(url);
-  const json = await res.json();
-
-  if (json.error) return null;
-
-  return json.cover?.source || json.picture?.data?.url || null;
-}
-
-export async function getPageViewsTotal(period: 'day' | 'week' | 'days_28' = 'day') {
-  const pageId = import.meta.env.META_PAGE_ID;
-  const token = import.meta.env.META_PAGE_ACCESS_TOKEN;
-
-  if (!pageId || !token) {
-    throw new Error('Variabili d\'ambiente Meta mancanti');
-  }
-
-  const url = `https://graph.facebook.com/${GRAPH_API_VERSION}/${pageId}/insights?metric=page_views_total&period=${period}&access_token=${token}`;
-
-  const res = await fetch(url);
-  const json = await res.json();
-
-  if (json.error) {
-    throw new Error(`Graph API error: ${json.error.message}`);
-  }
-
-  return json.data ?? [];
-}
+---
